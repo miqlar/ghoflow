@@ -24,11 +24,8 @@ contract GhoFlow {
 
     //function depositETHtoGHOStream(uint256 ghoAmount, address beneficiary) public payable{
     function depositETHtoGHOStream(uint256 ghoAmount, address beneficiary) public payable{
-        console.log(1);
         depositAndGetGHO(ghoAmount);
-        console.log(2);
         createStream(ghoAmount, beneficiary);
-        console.log(3);
     }
 
     function depositAndGetGHO(uint256 ghoAmount) internal {

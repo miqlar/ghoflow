@@ -68,8 +68,8 @@ contract GhoTest is StdCheats, Test {
 
         ghoflow.depositETHtoGHOStream{value: 10 ether}(10 ether, acc2);
 
-        //vm.roll(1000); // advance time
-        //assertGt(cfav1.getAccountFlowrate(ghox, acc2), 0); // Check that now the flow is >0
+        vm.roll(1000); // advance time
+        assertGt(cfav1.getAccountFlowrate(ghox, acc2), 0); // Check that now the flow is >0
     }
 
 }
