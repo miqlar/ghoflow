@@ -7,4 +7,6 @@ libs = ["lib"]
 
 [rpc_endpoints]
 goerli = "https://rpc.ankr.com/eth_goerli"
+sepolia = "https://rpc.ankr.com/eth_sepolia"
+
 
