@@ -13,3 +13,6 @@
 [submodule "smart_contracts/lib/superfluid-protocol-monorepo"]
 	path = smart_contracts/lib/superfluid-protocol-monorepo
 	url = https://github.com/superfluid-finance/protocol-monorepo
+[submodule "smart_contracts/lib/aave-v3-periphery"]
+	path = smart_contracts/lib/aave-v3-periphery
+	url = https://github.com/aave/aave-v3-periphery
