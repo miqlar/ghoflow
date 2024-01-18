@@ -10,6 +10,8 @@ import {IGhoToken} from "gho-core/src/contracts/gho/interfaces/IGhoToken.sol";
 import {IWrappedTokenGatewayV3} from "aave-v3-periphery/contracts/misc/interfaces/IWrappedTokenGatewayV3.sol";
 import {ISuperToken} from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
 import {CFAv1Forwarder} from "@superfluid-finance/ethereum-contracts/contracts/utils/CFAv1Forwarder.sol";
+import {GhoFlow} from "../src/GhoFlow.sol";
+
 
 contract GhoTest is StdCheats, Test {
 
@@ -19,14 +21,16 @@ contract GhoTest is StdCheats, Test {
     ISuperToken ghox = ISuperToken(0x22064a21FEE226D8fFB8818E7627d5FF6D0Fc33a);
     CFAv1Forwarder cfav1 = CFAv1Forwarder(0xcfA132E353cB4E398080B9700609bb008eceB125);
 
+    GhoFlow public ghoflow;
+
     address acc1 = vm.addr(1);
     address acc2 = vm.addr(2);
 
     function setUp() public {
         vm.createSelectFork(vm.rpcUrl("sepolia"));
-        //console.log(acc1);
         vm.deal(acc1, 10 ether); //Fund address with 10 eth
-        //console.log(acc1.balance);
+
+        ghoflow = new GhoFlow(); // Deploy ghoflow contract
     }
 
     function test_sanityCheckGHOBalanceStartsAt0() public {
@@ -40,7 +44,7 @@ contract GhoTest is StdCheats, Test {
         assertEq(gho.balanceOf(acc1), 10 ether);
     }
 
-    function test_getGHOandMakeFlow() public {
+    function test_manualGetGHOandMakeFlow() public {
         vm.startPrank(acc1);
 
         // --- Get GHO ---
@@ -56,5 +60,16 @@ contract GhoTest is StdCheats, Test {
         vm.roll(1000); // advance time
         assertGt(cfav1.getAccountFlowrate(ghox, acc2), 0); // Check that now the flow is >0
     }   
+
+    function test_GhoFlowSmartContract() public {
+        vm.startPrank(acc1);
+
+        assertEq(cfav1.getAccountFlowrate(ghox, acc2), 0); // Sanity check that we start with 0 flow
+
+        ghoflow.depositETHtoGHOStream{value: 10 ether}(10 ether, acc2);
+
+        //vm.roll(1000); // advance time
+        //assertGt(cfav1.getAccountFlowrate(ghox, acc2), 0); // Check that now the flow is >0
+    }
 
 }
