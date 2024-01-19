@@ -43,7 +43,15 @@ contract GhoFlow {
     function createStream(uint256 ghoAmount, address beneficiary) internal{
         gho.approve(address(ghox), ghoAmount); // Approve supertoken to transfer gho
         ghox.upgrade(ghoAmount); // wrap gho -> ghox
-        cfav1.createFlow(ghox, address(this), beneficiary, 10000, ""); // Create flow
+        cfav1.createFlow(ghox, address(this), beneficiary, 10000, new bytes(0)); // Create flow
+    }
+
+    function updateStream(int96 flowRate, address beneficiary) internal{
+        cfav1.updateFlow(ghox, address(this), beneficiary, flowRate, new bytes(0)); // Update flow
+    }
+
+    function deleteStream(address beneficiary) internal{
+        cfav1.deleteFlow(ghox, address(this), beneficiary, new bytes(0)); // Delete flow
     }
 
     function repayGHO(uint256 amount) public {
