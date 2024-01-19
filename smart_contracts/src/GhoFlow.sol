@@ -19,6 +19,7 @@ contract GhoFlow {
     IPool pool = IPool(0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951);
     ISuperToken ghox = ISuperToken(0x22064a21FEE226D8fFB8818E7627d5FF6D0Fc33a);
     CFAv1Forwarder cfav1 = CFAv1Forwarder(0xcfA132E353cB4E398080B9700609bb008eceB125);
+    IERC20 ethAToken = IERC20(0x5b071b590a59395fE4025A0Ccc1FcC931AAc1830);
 
     address public factory;
     address public sender;
@@ -43,6 +44,17 @@ contract GhoFlow {
         gho.approve(address(ghox), ghoAmount); // Approve supertoken to transfer gho
         ghox.upgrade(ghoAmount); // wrap gho -> ghox
         cfav1.createFlow(ghox, address(this), beneficiary, 10000, ""); // Create flow
+    }
+
+    function repayGHO(uint256 amount) public {
+        gho.transferFrom(sender, address(this), amount);
+        gho.approve(address(pool), amount);
+        pool.repay(address(gho), amount, 2, address(this));
+    }
+
+    function withdrawETH(uint256 amount) public onlyFactory{
+        ethAToken.approve(address(wtg), amount);
+        wtg.withdrawETH(address(pool), amount, sender);
     }
 
     modifier onlyFactory() {

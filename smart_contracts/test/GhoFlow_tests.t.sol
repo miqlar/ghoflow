@@ -21,6 +21,7 @@ contract GhoTest is StdCheats, Test {
     IPool pool = IPool(0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951);
     ISuperToken ghox = ISuperToken(0x22064a21FEE226D8fFB8818E7627d5FF6D0Fc33a);
     CFAv1Forwarder cfav1 = CFAv1Forwarder(0xcfA132E353cB4E398080B9700609bb008eceB125);
+    IERC20 ethAToken = IERC20(0x5b071b590a59395fE4025A0Ccc1FcC931AAc1830);
 
     GhoFlow public ghoflow;
     GhoFlowFactory public ghoFlowFactory;
@@ -74,7 +75,7 @@ contract GhoTest is StdCheats, Test {
         assertGt(cfav1.getAccountFlowrate(ghox, acc2), 0); // Check that now the flow is >0
     }
 
-    function test_GhoFlowFactory() public {
+    function test_GhoFlowFactory_set_up_stream() public {
 
         // Sanity check that we start with 0 flow
         assertEq(cfav1.getAccountFlowrate(ghox, acc1), 0); 
@@ -97,7 +98,37 @@ contract GhoTest is StdCheats, Test {
         ghoFlowFactory.newStream{value: 4 ether}(1 ether, acc3);
         assertGt(cfav1.getAccountFlowrate(ghox, acc3), 0); // Check that now the flow is >0
         assertNotEq(ghoFlowFactory.senderToGhoFlow(acc1), ghoFlowFactory.senderToGhoFlow(acc2));
+    }
+
+    function test_GhoFlowFactory_whole_cycle() public{
+
+        // Acc1 creates a stream and gets GHO debt
+        vm.startPrank(acc1);
+        ghoFlowFactory.newStream{value: 10 ether}(1000 ether, acc1);
+
+        // Acc2 borrows some GHO and sends it to Acc1
+        vm.startPrank(acc2);
+        uint256 startBalance = gho.balanceOf(acc1);
+        assertEq(startBalance, 0);
+        wtg.depositETH{value : 5 ether}(address(pool), acc2, 0); // Deposit 5 ETH
+        pool.borrow(address(gho), 9999 ether, 2, 0, acc2); // Borrow 1000 dollars
+        gho.transfer(acc1, 9999 ether);
+        uint256 endBalance = gho.balanceOf(acc1);
+        assertGt(endBalance, 0);
+
+        // Acc1 repays its debt and can withdraw its ETH
+        vm.startPrank(acc1);
+        gho.approve(ghoFlowFactory.senderToGhoFlow(acc1), 99999 ether);
+        ghoFlowFactory.repayAllGHO();
+        assertEq(ghoFlowFactory.getTotalGHODebt(acc1), 0);
+        startBalance = acc1.balance;
+        ghoFlowFactory.withdrawAllETH();
+        endBalance = acc1.balance;
+        assertGt(endBalance, startBalance);
+        assertEq(ghoFlowFactory.getSuppliedTotalETH(acc1), 0);
 
     }
+
+
 
 }
