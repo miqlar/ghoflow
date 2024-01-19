@@ -68,7 +68,6 @@ contract GhoTest is StdCheats, Test {
     }   
 
     function test_GhoFlowFactory_mvp() public {
-
         assertEq(cfav1.getAccountFlowrate(ghox, acc2), 0); // Sanity check that we start with 0 flow
         ghoFlowFactory.newStream{value: 10 ether}(1 ether, 1, acc2);
         assertGt(cfav1.getAccountFlowrate(ghox, acc2), 0); // Check that now the flow is >0
@@ -81,7 +80,7 @@ contract GhoTest is StdCheats, Test {
         assertEq(cfav1.getAccountFlowrate(ghox, acc2), 0); 
         assertEq(cfav1.getAccountFlowrate(ghox, acc3), 0);
 
-        // --- ACC 1 ---
+        // --- Acc 1 ---
         vm.startPrank(acc1);
 
         ghoFlowFactory.newStream{value: 4 ether}(1 ether, 1, acc2);
@@ -91,7 +90,7 @@ contract GhoTest is StdCheats, Test {
         assertGt(cfav1.getAccountFlowrate(ghox, acc3), 0); // Check that now the flow is >0
         assertEq(ghoFlowFactory.senderToGhoFlow(acc1), acc1_ghoflow);
 
-        // --- ACC 2 ---
+        // --- Acc 2 ---
         vm.startPrank(acc2);
 
         ghoFlowFactory.newStream{value: 4 ether}(1 ether, 1, acc3);
@@ -124,9 +123,16 @@ contract GhoTest is StdCheats, Test {
         endBalance = acc1.balance;
         assertGt(endBalance, startBalance);
         assertEq(ghoFlowFactory.getSuppliedTotalETH(acc1), 0);
-
     }
 
-
+    function test_GhoFlowFactory_stream_control() public {
+        assertEq(cfav1.getAccountFlowrate(ghox, acc2), 0); // Check that we start with 0 flow
+        ghoFlowFactory.newStream{value: 10 ether}(1 ether, 333, acc2);
+        assertEq(cfav1.getAccountFlowrate(ghox, acc2), 333); // Check that now the flow is >0
+        ghoFlowFactory.updateStream(777, acc2);
+        assertEq(cfav1.getAccountFlowrate(ghox, acc2), 777); // Check that now the flow is updated
+        ghoFlowFactory.deleteStream(acc2);
+        assertEq(cfav1.getAccountFlowrate(ghox, acc2), 0); // check that we end with 0 flow
+    }
 
 }
