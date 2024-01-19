@@ -16,7 +16,9 @@ contract GhoFlowFactory {
 
     constructor(){}
 
-    function newStream(uint256 ghoAmount, address beneficiary) public payable{
+    // --- STREAM MANAGEMET ---
+
+    function newStream(uint256 ghoAmount, int96 flowRate, address beneficiary) public payable{
         GhoFlow ghoflow;
         if (senderToGhoFlow[msg.sender]==address(0)){
             ghoflow = new GhoFlow(address(this), msg.sender);
@@ -25,10 +27,20 @@ contract GhoFlowFactory {
         else {
             ghoflow = GhoFlow(senderToGhoFlow[msg.sender]);
         } 
-        ghoflow.depositETHtoGHOStream{value: msg.value}(ghoAmount, beneficiary);
+        ghoflow.depositETHtoGHOStream{value: msg.value}(ghoAmount, flowRate, beneficiary);
     }
 
-    // 
+    function updateStream(int96 flowRate, address beneficiary) public {
+        require (senderToGhoFlow[msg.sender]!=address(0));
+        GhoFlow(senderToGhoFlow[msg.sender]).updateStream(flowRate, beneficiary);
+    }
+
+    function deleteStream(address beneficiary) public {
+        require (senderToGhoFlow[msg.sender]!=address(0));
+        GhoFlow(senderToGhoFlow[msg.sender]).deleteStream(beneficiary);
+    }
+
+    // --- REPAY AND WITHDRAW ---
 
     function repayGHO(uint256 amount) public {
         GhoFlow(senderToGhoFlow[msg.sender]).repayGHO(amount);

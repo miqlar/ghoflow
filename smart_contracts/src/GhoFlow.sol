@@ -29,9 +29,9 @@ contract GhoFlow {
         sender = _sender;
     }
 
-    function depositETHtoGHOStream(uint256 ghoAmount, address beneficiary) public payable onlyFactory{
+    function depositETHtoGHOStream(uint256 ghoAmount, int96 flowRate, address beneficiary) public payable onlyFactory{
         depositAndGetGHO(ghoAmount);
-        createStream(ghoAmount, beneficiary);
+        createStream(ghoAmount, flowRate, beneficiary);
     }
 
     function depositAndGetGHO(uint256 ghoAmount) internal {
@@ -40,17 +40,19 @@ contract GhoFlow {
         pool.borrow(address(gho), ghoAmount, 2, 0, address(this)); // Borrow GHO
     }
 
-    function createStream(uint256 ghoAmount, address beneficiary) internal{
+    function createStream(uint256 ghoAmount, int96 flowRate, address beneficiary) internal{
         gho.approve(address(ghox), ghoAmount); // Approve supertoken to transfer gho
         ghox.upgrade(ghoAmount); // wrap gho -> ghox
-        cfav1.createFlow(ghox, address(this), beneficiary, 10000, new bytes(0)); // Create flow
+        console.log(2);
+        cfav1.createFlow(ghox, address(this), beneficiary, flowRate, ""); // Create flow
+        console.log(3);
     }
 
-    function updateStream(int96 flowRate, address beneficiary) internal{
+    function updateStream(int96 flowRate, address beneficiary) public onlyFactory{
         cfav1.updateFlow(ghox, address(this), beneficiary, flowRate, new bytes(0)); // Update flow
     }
 
-    function deleteStream(address beneficiary) internal{
+    function deleteStream(address beneficiary) public onlyFactory{
         cfav1.deleteFlow(ghox, address(this), beneficiary, new bytes(0)); // Delete flow
     }
 

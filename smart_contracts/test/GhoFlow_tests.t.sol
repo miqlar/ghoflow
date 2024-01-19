@@ -37,6 +37,8 @@ contract GhoTest is StdCheats, Test {
 
         ghoflow = new GhoFlow(msg.sender, msg.sender); // Deploy ghoflow contract
         ghoFlowFactory = new GhoFlowFactory();
+
+        vm.startPrank(acc1);
     }
 
     function test_sanityCheckGHOBalanceStartsAt0() public {
@@ -44,14 +46,12 @@ contract GhoTest is StdCheats, Test {
     }
 
     function test_depositAndBorrowGHO() public {
-        vm.startPrank(acc1);
         wtg.depositETH{value : 5 ether}(address(pool), acc1, 0); // Deposit 5 ETH
         pool.borrow(address(gho), 10 ether, 2, 0, acc1); // Borrow 10 dollars
         assertEq(gho.balanceOf(acc1), 10 ether);
     }
 
     function test_manualGetGHOandMakeFlow() public {
-        vm.startPrank(acc1);
 
         // --- Get GHO ---
         wtg.depositETH{value : 5 ether}(address(pool), acc1, 0); // Deposit 5 ETH
@@ -67,11 +67,10 @@ contract GhoTest is StdCheats, Test {
         assertGt(cfav1.getAccountFlowrate(ghox, acc2), 0); // Check that now the flow is >0
     }   
 
-    function test_GhoFlowSmartContract() public {
-        vm.startPrank(acc1);
+    function test_GhoFlowFactory_mvp() public {
 
         assertEq(cfav1.getAccountFlowrate(ghox, acc2), 0); // Sanity check that we start with 0 flow
-        ghoflow.depositETHtoGHOStream{value: 10 ether}(10 ether, acc2);
+        ghoFlowFactory.newStream{value: 10 ether}(1 ether, 1, acc2);
         assertGt(cfav1.getAccountFlowrate(ghox, acc2), 0); // Check that now the flow is >0
     }
 
@@ -85,17 +84,17 @@ contract GhoTest is StdCheats, Test {
         // --- ACC 1 ---
         vm.startPrank(acc1);
 
-        ghoFlowFactory.newStream{value: 4 ether}(1 ether, acc2);
+        ghoFlowFactory.newStream{value: 4 ether}(1 ether, 1, acc2);
         assertGt(cfav1.getAccountFlowrate(ghox, acc2), 0); // Check that now the flow is >0
         address acc1_ghoflow = ghoFlowFactory.senderToGhoFlow(acc1);
-        ghoFlowFactory.newStream{value: 4 ether}(1 ether, acc3);
+        ghoFlowFactory.newStream{value: 4 ether}(1 ether, 1, acc3);
         assertGt(cfav1.getAccountFlowrate(ghox, acc3), 0); // Check that now the flow is >0
         assertEq(ghoFlowFactory.senderToGhoFlow(acc1), acc1_ghoflow);
 
         // --- ACC 2 ---
         vm.startPrank(acc2);
 
-        ghoFlowFactory.newStream{value: 4 ether}(1 ether, acc3);
+        ghoFlowFactory.newStream{value: 4 ether}(1 ether, 1, acc3);
         assertGt(cfav1.getAccountFlowrate(ghox, acc3), 0); // Check that now the flow is >0
         assertNotEq(ghoFlowFactory.senderToGhoFlow(acc1), ghoFlowFactory.senderToGhoFlow(acc2));
     }
@@ -103,8 +102,7 @@ contract GhoTest is StdCheats, Test {
     function test_GhoFlowFactory_whole_cycle() public{
 
         // Acc1 creates a stream and gets GHO debt
-        vm.startPrank(acc1);
-        ghoFlowFactory.newStream{value: 10 ether}(1000 ether, acc1);
+        ghoFlowFactory.newStream{value: 10 ether}(1000 ether, 1, acc1);
 
         // Acc2 borrows some GHO and sends it to Acc1
         vm.startPrank(acc2);
