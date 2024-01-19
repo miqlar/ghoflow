@@ -12,12 +12,12 @@ contract GhoFlowFactory {
     function newStream(uint256 ghoAmount, address beneficiary) public payable{
         GhoFlow ghoflow;
         if (senderToGhoFlow[msg.sender]==address(0)){
-            ghoflow = new GhoFlow();
+            ghoflow = new GhoFlow(address(this), msg.sender);
             senderToGhoFlow[msg.sender] = address(ghoflow);
         }
         else {
             ghoflow = GhoFlow(senderToGhoFlow[msg.sender]);
-        }
+        } 
         ghoflow.depositETHtoGHOStream{value: msg.value}(ghoAmount, beneficiary);
     }
 }

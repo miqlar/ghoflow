@@ -34,7 +34,7 @@ contract GhoTest is StdCheats, Test {
         vm.deal(acc1, 10 ether); //Fund address with 10 eth
         vm.deal(acc2, 10 ether); 
 
-        ghoflow = new GhoFlow(); // Deploy ghoflow contract
+        ghoflow = new GhoFlow(msg.sender, msg.sender); // Deploy ghoflow contract
         ghoFlowFactory = new GhoFlowFactory();
     }
 

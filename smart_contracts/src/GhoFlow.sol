@@ -20,9 +20,15 @@ contract GhoFlow {
     ISuperToken ghox = ISuperToken(0x22064a21FEE226D8fFB8818E7627d5FF6D0Fc33a);
     CFAv1Forwarder cfav1 = CFAv1Forwarder(0xcfA132E353cB4E398080B9700609bb008eceB125);
 
-    constructor(){}
+    address public factory;
+    address public sender;
 
-    function depositETHtoGHOStream(uint256 ghoAmount, address beneficiary) public payable{
+    constructor(address _factory, address _sender){
+        factory = _factory;
+        sender = _sender;
+    }
+
+    function depositETHtoGHOStream(uint256 ghoAmount, address beneficiary) public payable onlyFactory{
         depositAndGetGHO(ghoAmount);
         createStream(ghoAmount, beneficiary);
     }
@@ -38,5 +44,11 @@ contract GhoFlow {
         ghox.upgrade(ghoAmount); // wrap gho -> ghox
         cfav1.createFlow(ghox, address(this), beneficiary, 10000, ""); // Create flow
     }
+
+    modifier onlyFactory() {
+        require(msg.sender == factory); // Only the factory addresss can interact with its clones
+        _; // Continue with the function if the modifier condition is satisfied
+    }
+
 
 }
