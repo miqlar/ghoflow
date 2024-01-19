@@ -22,13 +22,13 @@ contract GhoFlow {
 
     constructor(){}
 
-    //function depositETHtoGHOStream(uint256 ghoAmount, address beneficiary) public payable{
     function depositETHtoGHOStream(uint256 ghoAmount, address beneficiary) public payable{
         depositAndGetGHO(ghoAmount);
         createStream(ghoAmount, beneficiary);
     }
 
     function depositAndGetGHO(uint256 ghoAmount) internal {
+        require(msg.value>0, "no value sent in transaction");
         wtg.depositETH{value : msg.value}(address(pool), address(this), 0); // Deposit ETH
         pool.borrow(address(gho), ghoAmount, 2, 0, address(this)); // Borrow GHO
     }

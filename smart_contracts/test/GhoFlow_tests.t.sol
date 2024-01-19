@@ -11,6 +11,7 @@ import {IWrappedTokenGatewayV3} from "aave-v3-periphery/contracts/misc/interface
 import {ISuperToken} from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
 import {CFAv1Forwarder} from "@superfluid-finance/ethereum-contracts/contracts/utils/CFAv1Forwarder.sol";
 import {GhoFlow} from "../src/GhoFlow.sol";
+import {GhoFlowFactory} from "../src/GhoFlowFactory.sol";
 
 
 contract GhoTest is StdCheats, Test {
@@ -22,15 +23,19 @@ contract GhoTest is StdCheats, Test {
     CFAv1Forwarder cfav1 = CFAv1Forwarder(0xcfA132E353cB4E398080B9700609bb008eceB125);
 
     GhoFlow public ghoflow;
+    GhoFlowFactory public ghoFlowFactory;
 
     address acc1 = vm.addr(1);
     address acc2 = vm.addr(2);
+    address acc3 = vm.addr(3);
 
     function setUp() public {
         vm.createSelectFork(vm.rpcUrl("sepolia"));
         vm.deal(acc1, 10 ether); //Fund address with 10 eth
+        vm.deal(acc2, 10 ether); 
 
         ghoflow = new GhoFlow(); // Deploy ghoflow contract
+        ghoFlowFactory = new GhoFlowFactory();
     }
 
     function test_sanityCheckGHOBalanceStartsAt0() public {
@@ -65,11 +70,34 @@ contract GhoTest is StdCheats, Test {
         vm.startPrank(acc1);
 
         assertEq(cfav1.getAccountFlowrate(ghox, acc2), 0); // Sanity check that we start with 0 flow
-
         ghoflow.depositETHtoGHOStream{value: 10 ether}(10 ether, acc2);
-
-        vm.roll(1000); // advance time
         assertGt(cfav1.getAccountFlowrate(ghox, acc2), 0); // Check that now the flow is >0
+    }
+
+    function test_GhoFlowFactory() public {
+
+        // Sanity check that we start with 0 flow
+        assertEq(cfav1.getAccountFlowrate(ghox, acc1), 0); 
+        assertEq(cfav1.getAccountFlowrate(ghox, acc2), 0); 
+        assertEq(cfav1.getAccountFlowrate(ghox, acc3), 0);
+
+        // --- ACC 1 ---
+        vm.startPrank(acc1);
+
+        ghoFlowFactory.newStream{value: 4 ether}(1 ether, acc2);
+        assertGt(cfav1.getAccountFlowrate(ghox, acc2), 0); // Check that now the flow is >0
+        address acc1_ghoflow = ghoFlowFactory.senderToGhoFlow(acc1);
+        ghoFlowFactory.newStream{value: 4 ether}(1 ether, acc3);
+        assertGt(cfav1.getAccountFlowrate(ghox, acc3), 0); // Check that now the flow is >0
+        assertEq(ghoFlowFactory.senderToGhoFlow(acc1), acc1_ghoflow);
+
+        // --- ACC 2 ---
+        vm.startPrank(acc2);
+
+        ghoFlowFactory.newStream{value: 4 ether}(1 ether, acc3);
+        assertGt(cfav1.getAccountFlowrate(ghox, acc3), 0); // Check that now the flow is >0
+        assertNotEq(ghoFlowFactory.senderToGhoFlow(acc1), ghoFlowFactory.senderToGhoFlow(acc2));
+
     }
 
 }
