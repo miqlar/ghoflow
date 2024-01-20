@@ -8,22 +8,27 @@ const Home = () => {
 
   useEffect(() => {
     const initSuperfluid = async () => {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const alchemyProvider = new ethers.providers.AlchemyProvider(
+        'sepolia', // Replace with your network
+        process.env.NEXT_PUBLIC_ALCHEMY_API_KEY // Your Alchemy API key
+      );
+
       const sfInstance = await Framework.create({
-        chainId: 11155111, //sepolia
-        provider
+        chainId: 11155111, // Sepolia testnet chain ID
+        provider: alchemyProvider
       });
+
       setSf(sfInstance);
     };
 
     initSuperfluid();
   }, []);
 
-  const createFlow = async (provider) => {
-    if (!sf || !provider) return;
+  const createFlow = async () => {
+    if (!sf) return;
 
     const xGhoTokenAddress = '0x...'; // Replace with xGHO token address on Sepolia
-    const signer = provider.getSigner();
+    const signer = sf.provider.getSigner();
     const xGho = await sf.loadSuperToken(xGhoTokenAddress);
 
     const senderAddress = await signer.getAddress();
@@ -44,7 +49,7 @@ const Home = () => {
   return (
     <div>
       <ConnectKitButton />
-      <button onClick={() => createFlow(new ethers.providers.Web3Provider(window.ethereum))}>Create Flow</button>
+      <button onClick={createFlow}>Create Flow</button>
       {/* Other UI elements */}
     </div>
   );
