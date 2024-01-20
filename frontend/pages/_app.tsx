@@ -7,15 +7,14 @@ import { ConnectKitProvider, getDefaultConfig } from 'connectkit';
 import SuperfluidWidget, { EventListeners, PaymentOption } from '@superfluid-finance/widget';
 import { useCallback, useMemo, useState } from 'react';
 
-import productDetails from './superfluid/productdetails';
-import paymentDatails from './superfluid/paymentDetails';
-
+import productDetails from './superfluid/productDetails';
+import paymentDetails from './superfluid/paymentDetails';
 import superfluidWidgetConfig from './superfluid/superfluid_widget.json';
 
 const config = createConfig(
   getDefaultConfig({
     appName: 'ConnectKit Next.js demo',
-    alchemyId:  process.env.NEXT_PUBLIC_ALCHEMY_ID,
+    alchemyId: process.env.NEXT_PUBLIC_ALCHEMY_ID,
     chains: [mainnet, polygon, optimism, arbitrum],
     walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
   })
@@ -38,11 +37,10 @@ function MyApp({ Component, pageProps }: AppProps) {
       <ConnectKitProvider>
         <SuperfluidWidget
           productDetails={productDetails}
-          paymentDetails={superfluidWidgetConfig} // json goes here
-          type="drawer"
+          paymentDetails={paymentDetails}
           walletManager={{
-            open: () => { /*  ConnectKit modal here */ },
-            isOpen: false, //  ConnectKit modal's open state
+            open: () => { /* ConnectKit modal here */ },
+            isOpen: false, // ConnectKit modal's open state
           }}
           eventListeners={eventListeners}
         >
