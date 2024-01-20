@@ -3,8 +3,10 @@ pragma solidity ^0.8.13;
 
 import {IPool} from "aave-v3-core/contracts/interfaces/IPool.sol";
 import {IERC20} from "aave-v3-core/contracts/dependencies/openzeppelin/contracts/IERC20.sol";
+import {IMockAggregator} from "./IMockAggregator.sol";
 
 import {GhoFlow} from "./GhoFlow.sol";
+
 
 contract GhoFlowFactory {
 
@@ -14,10 +16,14 @@ contract GhoFlowFactory {
 
     mapping(address => address) public senderToGhoFlow;
     mapping(address => address) public tokenToAToken;
+    mapping(address => address) public tokenToOracle;
 
     constructor(){
         tokenToAToken[0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357] = 0x29598b72eb5CeBd806C5dCD549490FdA35B13cD8; // DAI
         tokenToAToken[0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a] = 0x6b8558764d3b7572136F17174Cb9aB1DDc7E1259; // AAVE
+    
+        tokenToOracle[0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357] = 0x9aF11c35c5d3Ae182C0050438972aac4376f9516; // DAI
+        tokenToOracle[0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a] = 0xda678Ef100c13504edDb8a228A1e8e4CB139f189; // AVVE
     }
 
     // --- GhoFlow SUBCONTRACTS ---
@@ -110,5 +116,12 @@ contract GhoFlowFactory {
         return IERC20(tokenToAToken[tokenAddress]).balanceOf(senderToGhoFlow[acc]);
     }
 
+    function getETHValueDollars() public view returns (int256){
+        return IMockAggregator(0xDde0E8E6d3653614878Bf5009EDC317BC129fE2F).latestAnswer();
+    }
+
+    function getTokenValueDollars(address tokenAddress) public view returns (int256){
+        return IMockAggregator(tokenToOracle[tokenAddress]).latestAnswer();
+    }
 
 }

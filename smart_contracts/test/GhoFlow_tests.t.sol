@@ -143,7 +143,7 @@ contract GhoTest is StdCheats, Test {
     function test_GloFlowFactory_tokens_as_supply() public {
         deal(address(dai), acc1, 1000e18); // top with 1000 DAI
         dai.approve(address(ghoFlowFactory), 1000e18);
-        ghoFlowFactory.tokenToGhoStream(address(dai), 1000e18, 500e18, 5, acc2); // Supply 1000 DAI, borrow 500 GHO, create stream with 5GHO/s flowrate
+        ghoFlowFactory.tokenToGhoStream(address(dai), 1000e18, 100e18, 5, acc2); // Supply 1000 DAI, borrow 500 GHO, create stream with 5GHO/s flowrate
         assertGt(cfav1.getAccountFlowrate(ghox, acc2), 0); // Check that now the incoming flow to acc2 is >0
         assertGt(ghoFlowFactory.getSuppliedTotalTokens(acc1, address(dai)), 0);
 
@@ -174,6 +174,18 @@ contract GhoTest is StdCheats, Test {
         ghoFlowFactory.ethToGhoStream{value: 10 ether}(1000 ether, 1, address(0x1));
         ghoFlowFactory.createStream(10000, 1, address(0x2));
         ghoFlowFactory.createStream(10000, 1, address(0x3));
+    }
+
+    function test_GhoFlowFactory_oracles() public {
+        int256 ethPrice = ghoFlowFactory.getETHValueDollars();
+        int256 daiPrice = ghoFlowFactory.getTokenValueDollars(address(dai));
+        int256 aavePrice = ghoFlowFactory.getTokenValueDollars(address(aave));
+
+        console.log(uint256(ethPrice));
+        // Check vs sepolia mock oracles prices
+        assertEq(ethPrice, 4000e8);
+        assertEq(daiPrice, 1e8);
+        assertEq(aavePrice, 300e8);
     }
 
 }
