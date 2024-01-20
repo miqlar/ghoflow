@@ -12,6 +12,7 @@
     "@superfluid-finance/tokenlist": "^3.3.2",
     "@superfluid-finance/widget": "^0.4.7",
     "connectkit": "^1.6.0",
+    "ethers": "^6.10.0",
     "next": "14.1.0",
     "react": "^18",
     "react-dom": "^18",
