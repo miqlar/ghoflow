@@ -42,7 +42,7 @@ contract GhoFlowFactory {
         return ghoflow;
     }
 
-    // --- STREAM MANAGEMET ---
+    // --- STREAM MANAGEMENT ---
 
     function ethToGhoStream(uint256 ghoAmount, int96 flowRate, address beneficiary) public payable{
         ghoFlowManager().depositETHtoGHOStream{value: msg.value}(ghoAmount, flowRate, beneficiary);
@@ -57,16 +57,19 @@ contract GhoFlowFactory {
     }  
 
     function createStream(uint256 ghoamount, int96 flowRate, address beneficiary) public {
+        // Creates a superfluid stream without having to deposit collateral before
         require (senderToGhoFlow[msg.sender]!=address(0));
         GhoFlow(senderToGhoFlow[msg.sender]).createStream(ghoamount, flowRate, beneficiary);
     }
  
     function updateStream(int96 flowRate, address beneficiary) public {
+        // Update the flowrate of a superfluid stream
         require (senderToGhoFlow[msg.sender]!=address(0));
         GhoFlow(senderToGhoFlow[msg.sender]).updateStream(flowRate, beneficiary);
     }
 
     function deleteStream(address beneficiary) public {
+        // Delete a superfluid stream
         require (senderToGhoFlow[msg.sender]!=address(0));
         GhoFlow(senderToGhoFlow[msg.sender]).deleteStream(beneficiary);
     }
