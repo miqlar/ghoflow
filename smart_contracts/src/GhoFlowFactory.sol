@@ -10,6 +10,8 @@ import {GhoFlow} from "./GhoFlow.sol";
 
 contract GhoFlowFactory {
 
+    // --- Sepolia Addresses ---
+
     IPool pool = IPool(0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951);
     IERC20 ghoDebtToken = IERC20(0x67ae46EF043F7A4508BD1d6B94DB6c33F0915844);
     IERC20 ethAToken = IERC20(0x5b071b590a59395fE4025A0Ccc1FcC931AAc1830);

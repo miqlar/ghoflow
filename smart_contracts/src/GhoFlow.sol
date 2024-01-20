@@ -13,7 +13,7 @@ import {CFAv1Forwarder} from "@superfluid-finance/ethereum-contracts/contracts/u
 
 contract GhoFlow {
 
-    // --- Sepolia ---
+    // --- Sepolia Addresses ---
 
     // AAVE
     IWrappedTokenGatewayV3 wtg = IWrappedTokenGatewayV3(0x387d311e47e80b498169e6fb51d3193167d89F7D);
