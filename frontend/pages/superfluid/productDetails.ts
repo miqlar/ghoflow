@@ -1,9 +1,9 @@
 import { ProductDetails } from "@superfluid-finance/widget";
 
 const productDetails: ProductDetails = {
-  name: "Superfluid Funscription",
+  name: "GhoFlow",
   description:
-    "Superfluid Funscription is a subscription-based service for continuous & perpetual fun.",
+    "GhowFlow pay for subscriptions using GHO token",
 };
 
 export default productDetails;
