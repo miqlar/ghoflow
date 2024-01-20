@@ -16,13 +16,18 @@ import {GhoFlowFactory} from "../src/GhoFlowFactory.sol";
 
 contract GhoTest is StdCheats, Test {
 
-    GhoToken gho = GhoToken(0xc4bF5CbDaBE595361438F8c6a187bDc330539c60);
+    // AAVE
     IWrappedTokenGatewayV3 wtg = IWrappedTokenGatewayV3(0x387d311e47e80b498169e6fb51d3193167d89F7D);
     IPool pool = IPool(0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951);
+
+    // Superfluid
     ISuperToken ghox = ISuperToken(0x22064a21FEE226D8fFB8818E7627d5FF6D0Fc33a);
     CFAv1Forwarder cfav1 = CFAv1Forwarder(0xcfA132E353cB4E398080B9700609bb008eceB125);
-    IERC20 ethAToken = IERC20(0x5b071b590a59395fE4025A0Ccc1FcC931AAc1830);
+
+    // Tokens
+    GhoToken gho = GhoToken(0xc4bF5CbDaBE595361438F8c6a187bDc330539c60);
     IERC20 dai = IERC20(0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357);
+    IERC20 aave = IERC20(0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a);
 
     GhoFlow public ghoflow;
     GhoFlowFactory public ghoFlowFactory;
@@ -36,7 +41,6 @@ contract GhoTest is StdCheats, Test {
         vm.deal(acc1, 10 ether); //Fund address with 10 eth
         vm.deal(acc2, 10 ether); 
 
-        ghoflow = new GhoFlow(msg.sender, msg.sender); // Deploy ghoflow contract
         ghoFlowFactory = new GhoFlowFactory();
 
         vm.startPrank(acc1);
@@ -141,6 +145,31 @@ contract GhoTest is StdCheats, Test {
         dai.approve(address(ghoFlowFactory), 1000e18);
         ghoFlowFactory.tokenToGhoStream(address(dai), 1000e18, 500e18, 5, acc2); // Supply 1000 DAI, borrow 500 GHO, create stream with 5GHO/s flowrate
         assertGt(cfav1.getAccountFlowrate(ghox, acc2), 0); // Check that now the incoming flow to acc2 is >0
+        assertGt(ghoFlowFactory.getSuppliedTotalTokens(acc1, address(dai)), 0);
+
+        deal(address(gho), acc1, 1000e18); // top with 1000 GHO
+        gho.approve(ghoFlowFactory.senderToGhoFlow(acc1), 99999 ether); // approve gho
+        ghoFlowFactory.repayAllGHO(); // repay all debt
+        assertEq(ghoFlowFactory.getTotalGHODebt(acc1), 0); // check that there is 0 debt left
+        uint256 startBalance = dai.balanceOf(acc1);
+        ghoFlowFactory.withdrawAllTokens(address(dai)); // withdraw dai tokens
+        uint256 endBalance = dai.balanceOf(acc1);
+        assertGt(endBalance, startBalance);
+        assertEq(ghoFlowFactory.getSuppliedTotalTokens(acc1, address(dai)), 0);
     }
+
+    function test_GhoFlowFactory_several_assets() public {
+        deal(address(dai), acc1, 1000e18); // top with 1000 DAI
+        deal(address(aave), acc1, 1000e18); // top with 1000 USDC
+
+        dai.approve(address(ghoFlowFactory), 1000e18);
+        aave.approve(address(ghoFlowFactory), 1000e18);
+
+        ghoFlowFactory.ethToGhoStream{value: 10 ether}(1000 ether, 1, address(0x1));
+        ghoFlowFactory.tokenToGhoStream(address(dai), 1000e18, 500e18, 5, acc2); // Supply 1000 DAI, borrow 500 GHO, create stream with 5GHO/s flowrate
+        ghoFlowFactory.tokenToGhoStream(address(aave), 1000e18, 500e18, 5, acc3); // Supply 1000 USDC, borrow 500 GHO, create stream with 5GHO/s flowrate
+    }
+
+
 
 }

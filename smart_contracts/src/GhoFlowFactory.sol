@@ -13,8 +13,12 @@ contract GhoFlowFactory {
     IERC20 ethAToken = IERC20(0x5b071b590a59395fE4025A0Ccc1FcC931AAc1830);
 
     mapping(address => address) public senderToGhoFlow;
+    mapping(address => address) public tokenToAToken;
 
-    constructor(){}
+    constructor(){
+        tokenToAToken[0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357] = 0x29598b72eb5CeBd806C5dCD549490FdA35B13cD8; // DAI
+        tokenToAToken[0x88541670E55cC00bEEFD87eB59EDd1b7C511AC9a] = 0x6b8558764d3b7572136F17174Cb9aB1DDc7E1259; // AAVE
+    }
 
     // --- GhoFlow SUBCONTRACTS ---
 
@@ -54,7 +58,7 @@ contract GhoFlowFactory {
         GhoFlow(senderToGhoFlow[msg.sender]).deleteStream(beneficiary);
     }
 
-    // --- REPAY AND WITHDRAW ---
+    // --- REPAY GHO ---
 
     function repayGHO(uint256 amount) public {
         GhoFlow(senderToGhoFlow[msg.sender]).repayGHO(amount);
@@ -64,12 +68,22 @@ contract GhoFlowFactory {
         GhoFlow(senderToGhoFlow[msg.sender]).repayGHO(getTotalGHODebt(msg.sender));
     }
 
+    // --- WITHDRAW ---
+
     function withdrawETH(uint256 amount) public {
         GhoFlow(senderToGhoFlow[msg.sender]).withdrawETH(amount);
     }
 
     function withdrawAllETH() public {
         GhoFlow(senderToGhoFlow[msg.sender]).withdrawETH(ethAToken.balanceOf(senderToGhoFlow[msg.sender]));
+    }
+
+    function withdrawTokens(address tokenAddress, uint256 amount) public {
+        GhoFlow(senderToGhoFlow[msg.sender]).withdrawTokens(tokenAddress, amount);
+    }
+
+    function withdrawAllTokens(address tokenAddress) public {
+        GhoFlow(senderToGhoFlow[msg.sender]).withdrawTokens(tokenAddress, IERC20(tokenToAToken[tokenAddress]).balanceOf(senderToGhoFlow[msg.sender]));
     }
 
     // --- GET FUNCTIONS ---
@@ -85,6 +99,10 @@ contract GhoFlowFactory {
 
     function getSuppliedTotalETH(address acc) public view returns (uint256){
         return ethAToken.balanceOf(senderToGhoFlow[acc]);
+    }
+
+    function getSuppliedTotalTokens(address acc, address tokenAddress) public view returns (uint256){
+        return IERC20(tokenToAToken[tokenAddress]).balanceOf(senderToGhoFlow[acc]);
     }
 
 

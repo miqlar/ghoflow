@@ -79,6 +79,10 @@ contract GhoFlow {
         wtg.withdrawETH(address(pool), amount, sender);
     }
 
+    function withdrawTokens(address tokenAddress, uint256 amount) public onlyFactory{
+        pool.withdraw(tokenAddress, amount, sender);
+    }
+
     modifier onlyFactory() {
         require(msg.sender == factory); // Only the factory addresss can interact with its clones
         _; // Continue with the function if the modifier condition is satisfied
