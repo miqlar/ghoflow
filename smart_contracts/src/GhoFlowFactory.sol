@@ -16,9 +16,9 @@ contract GhoFlowFactory {
 
     constructor(){}
 
-    // --- STREAM MANAGEMET ---
+    // --- GhoFlow SUBCONTRACTS ---
 
-    function newStream(uint256 ghoAmount, int96 flowRate, address beneficiary) public payable{
+    function ghoFlowManager() private returns (GhoFlow){
         GhoFlow ghoflow;
         if (senderToGhoFlow[msg.sender]==address(0)){
             ghoflow = new GhoFlow(address(this), msg.sender);
@@ -27,8 +27,22 @@ contract GhoFlowFactory {
         else {
             ghoflow = GhoFlow(senderToGhoFlow[msg.sender]);
         } 
-        ghoflow.depositETHtoGHOStream{value: msg.value}(ghoAmount, flowRate, beneficiary);
+        return ghoflow;
     }
+
+    // --- STREAM MANAGEMET ---
+
+    function ethToGhoStream(uint256 ghoAmount, int96 flowRate, address beneficiary) public payable{
+        ghoFlowManager().depositETHtoGHOStream{value: msg.value}(ghoAmount, flowRate, beneficiary);
+    }
+
+    function tokenToGhoStream(address tokenAddress, uint256 tokenAmount, uint256 ghoAmount, int96 flowRate, address beneficiary) public {
+        // Requires token approval before!
+        GhoFlow ghoflow = ghoFlowManager();
+        IERC20(tokenAddress).transferFrom(msg.sender, address(this), tokenAmount);
+        IERC20(tokenAddress).transfer(address(ghoflow), tokenAmount);
+        ghoflow.depositTokensToGhoStream(tokenAddress, ghoAmount, flowRate, beneficiary);
+    }  
 
     function updateStream(int96 flowRate, address beneficiary) public {
         require (senderToGhoFlow[msg.sender]!=address(0));

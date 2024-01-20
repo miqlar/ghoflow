@@ -30,13 +30,25 @@ contract GhoFlow {
     }
 
     function depositETHtoGHOStream(uint256 ghoAmount, int96 flowRate, address beneficiary) public payable onlyFactory{
-        depositAndGetGHO(ghoAmount);
+        depositETHAndGetGHO(ghoAmount);
         createStream(ghoAmount, flowRate, beneficiary);
     }
 
-    function depositAndGetGHO(uint256 ghoAmount) internal {
+    function depositTokensToGhoStream(address tokenAddress, uint256 ghoAmount, int96 flowRate, address beneficiary) public onlyFactory{
+        depositTokensAndGetGHO(tokenAddress, ghoAmount);
+        createStream(ghoAmount, flowRate, beneficiary);
+    }
+
+    function depositETHAndGetGHO(uint256 ghoAmount) internal {
         require(msg.value>0, "no value sent in transaction");
         wtg.depositETH{value : msg.value}(address(pool), address(this), 0); // Deposit ETH
+        pool.borrow(address(gho), ghoAmount, 2, 0, address(this)); // Borrow GHO
+    }
+
+    function depositTokensAndGetGHO(address tokenAddress, uint256 ghoAmount) internal {
+        uint256 tokenBalance = IERC20(tokenAddress).balanceOf(address(this));
+        IERC20(tokenAddress).approve(address(pool), tokenBalance);
+        pool.supply(tokenAddress, tokenBalance, address(this), 0);
         pool.borrow(address(gho), ghoAmount, 2, 0, address(this)); // Borrow GHO
     }
 
