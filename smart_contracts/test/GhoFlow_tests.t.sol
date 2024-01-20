@@ -170,6 +170,10 @@ contract GhoTest is StdCheats, Test {
         ghoFlowFactory.tokenToGhoStream(address(aave), 1000e18, 500e18, 5, acc3); // Supply 1000 USDC, borrow 500 GHO, create stream with 5GHO/s flowrate
     }
 
-
+    function test_GhoFlowFactory_multi_streams_with_one_deposit() public {
+        ghoFlowFactory.ethToGhoStream{value: 10 ether}(1000 ether, 1, address(0x1));
+        ghoFlowFactory.createStream(10000, 1, address(0x2));
+        ghoFlowFactory.createStream(10000, 1, address(0x3));
+    }
 
 }

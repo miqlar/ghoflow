@@ -29,12 +29,12 @@ contract GhoFlow {
         sender = _sender;
     }
 
-    function depositETHtoGHOStream(uint256 ghoAmount, int96 flowRate, address beneficiary) public payable onlyFactory{
+    function depositETHtoGHOStream(uint256 ghoAmount, int96 flowRate, address beneficiary) public payable onlyGhoFlow{
         depositETHAndGetGHO(ghoAmount);
         createStream(ghoAmount, flowRate, beneficiary);
     }
 
-    function depositTokensToGhoStream(address tokenAddress, uint256 ghoAmount, int96 flowRate, address beneficiary) public onlyFactory{
+    function depositTokensToGhoStream(address tokenAddress, uint256 ghoAmount, int96 flowRate, address beneficiary) public onlyGhoFlow{
         depositTokensAndGetGHO(tokenAddress, ghoAmount);
         createStream(ghoAmount, flowRate, beneficiary);
     }
@@ -52,19 +52,18 @@ contract GhoFlow {
         pool.borrow(address(gho), ghoAmount, 2, 0, address(this)); // Borrow GHO
     }
 
-    function createStream(uint256 ghoAmount, int96 flowRate, address beneficiary) internal{
+    function createStream(uint256 ghoAmount, int96 flowRate, address beneficiary) public onlyGhoFlow{
+        pool.borrow(address(gho), ghoAmount, 2, 0, address(this)); // Borrow GHO
         gho.approve(address(ghox), ghoAmount); // Approve supertoken to transfer gho
         ghox.upgrade(ghoAmount); // wrap gho -> ghox
-        console.log(2);
-        cfav1.createFlow(ghox, address(this), beneficiary, flowRate, ""); // Create flow
-        console.log(3);
+        cfav1.createFlow(ghox, address(this), beneficiary, flowRate, new bytes(0)); // Create flow
     }
 
-    function updateStream(int96 flowRate, address beneficiary) public onlyFactory{
+    function updateStream(int96 flowRate, address beneficiary) public onlyGhoFlow{
         cfav1.updateFlow(ghox, address(this), beneficiary, flowRate, new bytes(0)); // Update flow
     }
 
-    function deleteStream(address beneficiary) public onlyFactory{
+    function deleteStream(address beneficiary) public onlyGhoFlow{
         cfav1.deleteFlow(ghox, address(this), beneficiary, new bytes(0)); // Delete flow
     }
 
@@ -74,17 +73,17 @@ contract GhoFlow {
         pool.repay(address(gho), amount, 2, address(this));
     }
 
-    function withdrawETH(uint256 amount) public onlyFactory{
+    function withdrawETH(uint256 amount) public onlyGhoFlow{
         ethAToken.approve(address(wtg), amount);
         wtg.withdrawETH(address(pool), amount, sender);
     }
 
-    function withdrawTokens(address tokenAddress, uint256 amount) public onlyFactory{
+    function withdrawTokens(address tokenAddress, uint256 amount) public onlyGhoFlow{
         pool.withdraw(tokenAddress, amount, sender);
     }
 
-    modifier onlyFactory() {
-        require(msg.sender == factory); // Only the factory addresss can interact with its clones
+    modifier onlyGhoFlow() {
+        require(msg.sender == factory || msg.sender == address(this)); // Only the factory addresss can interact with its clones
         _; // Continue with the function if the modifier condition is satisfied
     }
 

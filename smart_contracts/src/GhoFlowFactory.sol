@@ -48,6 +48,11 @@ contract GhoFlowFactory {
         ghoflow.depositTokensToGhoStream(tokenAddress, ghoAmount, flowRate, beneficiary);
     }  
 
+    function createStream(uint256 ghoamount, int96 flowRate, address beneficiary) public {
+        require (senderToGhoFlow[msg.sender]!=address(0));
+        GhoFlow(senderToGhoFlow[msg.sender]).createStream(ghoamount, flowRate, beneficiary);
+    }
+ 
     function updateStream(int96 flowRate, address beneficiary) public {
         require (senderToGhoFlow[msg.sender]!=address(0));
         GhoFlow(senderToGhoFlow[msg.sender]).updateStream(flowRate, beneficiary);
