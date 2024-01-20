@@ -101,9 +101,9 @@ contract GhoFlowFactory {
 
     // --- GET FUNCTIONS ---
 
-    function getAccountHealthFactor(address acc) public view returns (uint256){
-        (,,,,,uint256 healthFactor) =  pool.getUserAccountData(senderToGhoFlow[acc]);
-        return healthFactor;
+    function getInfo(address acc) public view returns (uint256, uint256, uint256, uint256){
+        (uint256 collateralValueDollars, uint256 debtValueDollars, uint256 availableDebtValueDollars,,,uint256 healthFactor) =  pool.getUserAccountData(senderToGhoFlow[acc]);
+        return (collateralValueDollars, debtValueDollars, availableDebtValueDollars, healthFactor);
     }
 
     function getTotalGHODebt(address acc) public view returns (uint256){

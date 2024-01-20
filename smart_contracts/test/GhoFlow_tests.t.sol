@@ -176,6 +176,8 @@ contract GhoTest is StdCheats, Test {
         ghoFlowFactory.ethToGhoStream{value: 10 ether}(1000 ether, 1, address(0x1));
         ghoFlowFactory.createStream(10000, 1, address(0x2));
         ghoFlowFactory.createStream(10000, 1, address(0x3));
+        (uint256 a,uint256 b,uint256 c,uint256 d) = (ghoFlowFactory.getInfo(acc1));
+        console.log(a,b,c,d);
     }
 
     function test_GhoFlowFactory_oracles() public {
