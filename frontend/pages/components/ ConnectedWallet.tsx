@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import { useAccount } from "wagmi";
 
 // Make sure that this component is wrapped with ConnectKitProvider

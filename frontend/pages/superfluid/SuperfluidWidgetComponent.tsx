@@ -1,35 +1,36 @@
-// SuperfluidWidgetComponent.tsx
-import React, { useMemo } from 'react';
-import SuperfluidWidget from '@superfluid-finance/widget';
-import superTokenList from "@superfluid-finance/tokenlist";
-import { useAccount } from "wagmi";
-import superfluidWidgetData from './superfluid_widget.json'; 
+// import React from 'react';
+// import SuperfluidWidget from '@superfluid-finance/widget';
+// import superTokenList from "@superfluid-finance/tokenlist";
+// import { useAccount } from "wagmi";
 
+// const SuperfluidComponent = () => {
+//   const { isConnected } = useAccount();
+//   const widgetData = {/* ... your widget configuration ... */};
 
-const SuperfluidWidgetComponent = ({ data }) => {
-  const { isConnected } = useAccount();
+//   if (!isConnected) {
+//     return <p>Please connect your wallet to use the Superfluid Widget.</p>;
+//   }
 
-  const walletManager = useMemo(() => ({
-    open: () => { /* logic to handle wallet opening if needed */ },
-    isOpen: isConnected,
-  }), [isConnected]);
+//   return (
+//     <div>
+//     <WagmiConfig config={wagmiConfig}></WagmiConfig>
+//       <SuperfluidWidget
+//         {...widgetData}
+//         tokenList={superTokenList}
+//         type="dialog"
+//         // Define your walletManager logic based on ConnectKit
+//         walletManager={{
+//           open: () => {/* logic to open wallet */},
+//           isOpen: isConnected,
+//         }}
+//       >
+//         {({ openModal }) => (
+//           <button onClick={() => openModal()}>Subscribe Now</button>
+//         )}
+//       </SuperfluidWidget>
+//     </WagmiConfig>
+//     </div>
+//   );
+// };
 
-  return (
-    <div>
-      {isConnected && (
-        <SuperfluidWidget
-          {...data}
-          tokenList={superTokenList}
-          type="dialog" // or 'drawer', 'full-screen', etc.
-          walletManager={walletManager}
-        >
-          {({ openModal }) => (
-            <button onClick={openModal}>Open Superfluid Widget</button>
-          )}
-        </SuperfluidWidget>
-      )}
-    </div>
-  );
-};
-
-export default SuperfluidWidgetComponent;
+// export default SuperfluidComponent;
