@@ -16,6 +16,8 @@ import {GhoFlowFactory} from "../src/GhoFlowFactory.sol";
 
 contract GhoTest is StdCheats, Test {
 
+    // --- Sepolia Addresses ---
+
     // AAVE
     IWrappedTokenGatewayV3 wtg = IWrappedTokenGatewayV3(0x387d311e47e80b498169e6fb51d3193167d89F7D);
     IPool pool = IPool(0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951);

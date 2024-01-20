@@ -13,12 +13,18 @@ import {CFAv1Forwarder} from "@superfluid-finance/ethereum-contracts/contracts/u
 
 contract GhoFlow {
 
-    // TODO - put addresses in constructor instead of hardcoded
-    IGhoToken gho = IGhoToken(0xc4bF5CbDaBE595361438F8c6a187bDc330539c60);
+    // --- Sepolia ---
+
+    // AAVE
     IWrappedTokenGatewayV3 wtg = IWrappedTokenGatewayV3(0x387d311e47e80b498169e6fb51d3193167d89F7D);
     IPool pool = IPool(0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951);
+
+    // Superfluid
     ISuperToken ghox = ISuperToken(0x22064a21FEE226D8fFB8818E7627d5FF6D0Fc33a);
     CFAv1Forwarder cfav1 = CFAv1Forwarder(0xcfA132E353cB4E398080B9700609bb008eceB125);
+
+    // Tokens
+    IGhoToken gho = IGhoToken(0xc4bF5CbDaBE595361438F8c6a187bDc330539c60);
     IERC20 ethAToken = IERC20(0x5b071b590a59395fE4025A0Ccc1FcC931AAc1830);
 
     address public factory;
