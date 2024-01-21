@@ -86,7 +86,7 @@ contract GhoFlow {
         cfav1.deleteFlow(ghox, address(this), beneficiary, new bytes(0)); // Delete flow
     }
 
-    function repayGHO(uint256 amount) public {
+    function repayGHO(uint256 amount) public onlyGhoFlow{
         gho.transferFrom(sender, address(this), amount);
         gho.approve(address(pool), amount);
         pool.repay(address(gho), amount, 2, address(this));
