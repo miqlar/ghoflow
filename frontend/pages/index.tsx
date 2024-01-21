@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useEffect, useState, ChangeEvent } from 'react';
 import {
   Box, VStack, Text, Select, Slider, SliderTrack, SliderFilledTrack,
@@ -8,8 +6,8 @@ import {
 import { useAccount, useContractRead } from 'wagmi';
 import contractABI from './api/abi';
 import GhoFlowFactoryComponent from './components/GhoFlowFactoryComponent';
-import { ConnectKitButton } from 'connectkit';
 import { ethers } from 'ethers';
+import ConnectedWallet from './components/ ConnectedWallet'; //
 
 const GhoFlowFactoryAddress = "0x31554a01faEdDFDe645D6BDd8f810CBF1D180fA8";
 
@@ -24,7 +22,7 @@ const subscriptionRates = {
 type SubscriptionType = keyof typeof subscriptionRates;
 
 const Home = () => {
-  const { address, isConnected } = useAccount();
+  const { address, isConnecting, isConnected } = useAccount();
   const [selectedSubscription, setSelectedSubscription] = useState<SubscriptionType>('basic');
   const [collateralization, setCollateralization] = useState(1.0);
   const [ethPriceUSD, setEthPriceUSD] = useState(0);
@@ -58,8 +56,15 @@ const Home = () => {
     setCollateralization(value);
   };
 
+  const handleConnectWalletClick = () => {
+    // Handle wallet connection here if needed
+    // You can use a wallet provider like WalletConnect
+    // and dispatch appropriate actions to connect the wallet.
+  };
+
   return (
     <Box p={4}>
+      <ConnectedWallet /> {/* Display the ConnectedWallet component */}
       {isConnected ? (
         <VStack spacing={4}>
           <Select placeholder="Select subscription" value={selectedSubscription} onChange={handleSubscriptionChange}>
@@ -75,7 +80,7 @@ const Home = () => {
             </SliderTrack>
             <SliderThumb />
           </Slider>
-          <GhoFlowFactoryComponent 
+          <GhoFlowFactoryComponent
             ethPriceUSD={ethPriceUSD}
             selectedSubscription={selectedSubscription}
             collateralization={collateralization}
@@ -84,7 +89,7 @@ const Home = () => {
           />
         </VStack>
       ) : (
-        <Text>Please connect your wallet.</Text>
+        <Button onClick={handleConnectWalletClick}>Connect Wallet</Button>
       )}
     </Box>
   );
