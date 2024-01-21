@@ -8,6 +8,22 @@ const Home = () => {
   const [collateralRatio, setCollateralRatio] = useState(1);
   const { isConnected } = useConnect();
 
+  // Determine the subscription rate based on the selected option
+  const getSubscriptionRate = (subscription) => {
+    switch (subscription) {
+      case 'basic':
+        return 100;
+      case 'standard':
+        return 200;
+      case 'premium':
+        return 300;
+      default:
+        return 100;
+    }
+  };
+
+  const subscriptionRatePerMonth = getSubscriptionRate(selectedSubscription);
+
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
       <ConnectKitButton />
@@ -16,9 +32,9 @@ const Home = () => {
           <GridItem>
             <Text mb="8px">Subscription Selection</Text>
             <Select onChange={(e) => setSelectedSubscription(e.target.value)}>
-              <option value="basic">Basic Plan - 100$/Month</option>
-              <option value="standard">Standard Plan - 200$/Month</option>
-              <option value="premium">Premium Plan - 300$/Month</option>
+              <option value="basic">Basic Plan - $100/Month</option>
+              <option value="standard">Standard Plan - $200/Month</option>
+              <option value="premium">Premium Plan - $300/Month</option>
             </Select>
           </GridItem>
           <GridItem>
@@ -32,7 +48,11 @@ const Home = () => {
           </GridItem>
           <GridItem colSpan={2}>
             {/* GhoFlowFactory Component */}
-            <GhoFlowFactoryComponent selectedSubscription={selectedSubscription} collateralRatio={collateralRatio} />
+            <GhoFlowFactoryComponent 
+              selectedSubscription={selectedSubscription} 
+              collateralRatio={collateralRatio}
+              subscriptionRatePerMonth={subscriptionRatePerMonth}
+            />
           </GridItem>
         </Grid>
       )}
