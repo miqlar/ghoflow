@@ -1,27 +1,27 @@
-'use client';
-import { WagmiConfig, createConfig } from "wagmi";
-import { ConnectKitProvider, getDefaultConfig } from "connectkit";
-import React, { ReactNode } from 'react';
+// 'use client';
+// import { WagmiConfig, createConfig } from "wagmi";
+// import { ConnectKitProvider, getDefaultConfig } from "connectkit";
+// import React, { ReactNode } from 'react';
 
 
-const config = createConfig(
-  getDefaultConfig({
-    alchemyId: process.env.NEXT_PUBLIC_ALCHEMY_ID,
-    walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
+// const config = createConfig(
+//   getDefaultConfig({
+//     alchemyId: process.env.NEXT_PUBLIC_ALCHEMY_ID,
+//     walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
     
-    appName: "Connectkit with Next. js",
-    appDescription: "GHO Hackathon App",
-    appUrl: "https://family.co",
-    appIcon: "https://family.co/logo.png",
-  }),
-);
+//     appName: "GhoFlow",
+//     appDescription: "GhoFlow",
+//     appUrl: "https://family.co",
+//     appIcon: "https://family.co/logo.png",
+//   }),
+// );
 
-export const ConnectkitProvider =({ children}) => {
-    return (
-    <WagmiConfig config={config}>
-     <ConnectKitProvider>
-        {children}
-     </ConnectKitProvider>
-</WagmiConfig>
-    );
-};
+// export const ConnectkitProvider =({ children}) => {
+//     return (
+//     <WagmiConfig config={config}>
+//      <ConnectKitProvider>
+//         {children}
+//      </ConnectKitProvider>
+// </WagmiConfig>
+//     );
+// };

@@ -1,57 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import { ConnectKitButton } from 'connectkit';
-import { Framework } from "@superfluid-finance/sdk-core";
-import { ethers } from "ethers";
+import React, { useState } from 'react';
+import { ConnectKitButton, useConnect } from 'connectkit';
+import { Box, Grid, GridItem, Select, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Text } from '@chakra-ui/react';
+import GhoFlowFactoryComponent from './components/GhoFlowFactoryComponent';
 
 const Home = () => {
-  const [sf, setSf] = useState(null);
-
-  useEffect(() => {
-    const initSuperfluid = async () => {
-      const alchemyProvider = new ethers.providers.AlchemyProvider(
-        'sepolia', // Replace with your network
-        process.env.NEXT_PUBLIC_ALCHEMY_API_KEY // Your Alchemy API key
-      );
-
-      const sfInstance = await Framework.create({
-        chainId: 11155111, // Sepolia testnet chain ID
-        provider: alchemyProvider
-      });
-
-      setSf(sfInstance);
-    };
-
-    initSuperfluid();
-  }, []);
-
-  const createFlow = async () => {
-    if (!sf) return;
-
-    const xGhoTokenAddress = '0x...'; // Replace with xGHO token address on Sepolia
-    const signer = sf.provider.getSigner();
-    const xGho = await sf.loadSuperToken(xGhoTokenAddress);
-
-    const senderAddress = await signer.getAddress();
-    const receiverAddress = '0xReceiverAddress'; // Replace with receiver address like "Netflix"
-    const flowRate = '38580246913580'; // Example flow rate
-
-    const createFlowOperation = xGho.createFlow({
-      sender: senderAddress,
-      receiver: receiverAddress,
-      flowRate: flowRate
-    });
-
-    const txnResponse = await createFlowOperation.exec(signer);
-    const txnReceipt = await txnResponse.wait();
-    // Handle response
-  };
+  const [selectedSubscription, setSelectedSubscription] = useState('basic');
+  const [collateralRatio, setCollateralRatio] = useState(1);
+  const { isConnected } = useConnect();
 
   return (
-    <div>
+    <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
       <ConnectKitButton />
-      <button onClick={createFlow}>Create Flow</button>
-      {/* Other UI elements */}
-    </div>
+      {isConnected && (
+        <Grid templateColumns="repeat(2, 1fr)" gap={6}>
+          <GridItem>
+            <Text mb="8px">Subscription Selection</Text>
+            <Select onChange={(e) => setSelectedSubscription(e.target.value)}>
+              <option value="basic">Basic Plan - 100$/Month</option>
+              <option value="standard">Standard Plan - 200$/Month</option>
+              <option value="premium">Premium Plan - 300$/Month</option>
+            </Select>
+          </GridItem>
+          <GridItem>
+            <Text mb="8px">Collateralization Ratio</Text>
+            <Slider defaultValue={collateralRatio} min={1} max={2} step={0.01} onChange={(val) => setCollateralRatio(val)}>
+              <SliderTrack>
+                <SliderFilledTrack />
+              </SliderTrack>
+              <SliderThumb />
+            </Slider>
+          </GridItem>
+          <GridItem colSpan={2}>
+            {/* GhoFlowFactory Component */}
+            <GhoFlowFactoryComponent selectedSubscription={selectedSubscription} collateralRatio={collateralRatio} />
+          </GridItem>
+        </Grid>
+      )}
+    </Box>
   );
 };
 
