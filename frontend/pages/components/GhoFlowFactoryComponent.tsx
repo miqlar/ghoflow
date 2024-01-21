@@ -17,7 +17,6 @@ const GhoFlowFactoryComponent = () => {
         functionName: 'getETHValueDollars',
     });
 
-    // Assuming ethValueData is returned in the correct format (e.g., wei, gwei, etc.)
     const ethValueInDollars = ethValueData ? parseFloat(ethers.utils.formatUnits(ethValueData, 'wei')) : 0;
 
     const subscriptionRatePerMonth = 100; // Assuming a flat rate of $100 per month
