@@ -12,9 +12,9 @@ GhoFlow allows the merchant to have a payment widget, streamlines the whole proc
 
 ## Deployed contracts
 
-| Network | Address |
-| --------------- | --------------- |
-| Sepolia   | [0x31554a01faEdDFDe645D6BDd8f810CBF1D180fA8](https://sepolia.etherscan.io/address/0x31554a01faEdDFDe645D6BDd8f810CBF1D180fA8)  |
+| Network | Address | Etherscan Verfied |
+| --------------- | --------------- | --- |
+| Sepolia   | [0x31554a01faEdDFDe645D6BDd8f810CBF1D180fA8](https://sepolia.etherscan.io/address/0x31554a01faEdDFDe645D6BDd8f810CBF1D180fA8)  | :white_check_mark:	  |
 
 
 ## Description
