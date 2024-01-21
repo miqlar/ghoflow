@@ -1,4 +1,4 @@
-{
+export default {
   "abi": [
     {
       "inputs": [],
@@ -8165,4 +8165,4 @@
     "license": "UNLICENSED"
   },
   "id": 62
-}
+} as const;
