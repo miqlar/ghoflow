@@ -19,5 +19,8 @@
 
 ## Description
 
-## Flow charts
+## Protocol Diagrams
 
+![flow_1](img/diagram_1.png)
+
+![flow_2](img/diagram_2.png)
