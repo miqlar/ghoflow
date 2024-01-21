@@ -1,3 +1,4 @@
+"use client";
 
 import { useState } from "react";
 import { formatEther } from "viem";
@@ -9,6 +10,8 @@ import {
   usePrepareContractWrite,
 } from "wagmi";
 import contractABI from "../api/abi";
+import { ethers } from 'ethers';
+ 
 
 const GhoFlowFactoryAddress = "0x31554a01faEdDFDe645D6BDd8f810CBF1D180fA8";
 
@@ -46,20 +49,20 @@ interface Props {
     ? parseFloat(formatEther(ethValueData, "wei"))
     : 1;
 
-  // Prepare the contract write operation
-  const { config: ethStreamConfig, error: prepareError } =
-    usePrepareContractWrite({
-      address: GhoFlowFactoryAddress,
-      abi: contractABI.abi,
-      functionName: "ethToGhoStream",
-      args: [
-        BigInt(String(requiredEth)), // Total ETH for the subscription
-        BigInt(flowRate), // The flow rate to stream GHO tokens
-        userAddress as Address, // The beneficiary address
-      ],
-      enabled: userAddress !== undefined,
-      value: BigInt(Math.floor(Number(requiredEth) * collateralization)),
-    });
+// Prepare the contract write operation
+const { config: ethStreamConfig, error: prepareError } =
+  usePrepareContractWrite({
+    address: GhoFlowFactoryAddress,
+    abi: contractABI.abi,
+    functionName: "ethToGhoStream",
+    args: [
+      BigInt(ethers.utils.parseUnits(requiredEth, 'ether').toString()), // Total ETH for the subscription
+      BigInt(flowRate), // The flow rate to stream GHO tokens
+      userAddress as Address, // The beneficiary address
+    ],
+    enabled: userAddress !== undefined,
+    value: BigInt(ethers.utils.parseUnits((Number(requiredEth) * collateralization).toString(), 'ether').toString()),
+  });
 
   const {
     writeAsync: createEthStream,
