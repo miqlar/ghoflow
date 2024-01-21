@@ -38,13 +38,15 @@ contract GhoFlow {
     function depositETHtoGHOStream(uint256 ghoAmount, int96 flowRate, address beneficiary) public payable onlyGhoFlow{
         depositETH();
         mintGHO(ghoAmount);
-        createStream(ghoAmount, flowRate, beneficiary);
+        wrapGHO(ghoAmount);
+        createStream(flowRate, beneficiary);
     }
 
     function depositTokensToGhoStream(address tokenAddress, uint256 ghoAmount, int96 flowRate, address beneficiary) public onlyGhoFlow{
         depositTokens(tokenAddress);
         mintGHO(ghoAmount);
-        createStream(ghoAmount, flowRate, beneficiary);
+        wrapGHO(ghoAmount);
+        createStream(flowRate, beneficiary);
     }
 
     function depositETH() public payable onlyGhoFlow {
@@ -62,10 +64,17 @@ contract GhoFlow {
         pool.borrow(address(gho), ghoAmount, 2, 0, address(this)); // Borrow GHO
     }
 
-    function createStream(uint256 ghoAmount, int96 flowRate, address beneficiary) public onlyGhoFlow{
-        pool.borrow(address(gho), ghoAmount, 2, 0, address(this)); // Borrow GHO
+    function wrapGHO(uint256 ghoAmount) public onlyGhoFlow{
         gho.approve(address(ghox), ghoAmount); // Approve supertoken to transfer gho
         ghox.upgrade(ghoAmount); // wrap gho -> ghox
+    }
+
+    function mintGHOandCreateStream(uint256 ghoAmount, int96 flowRate, address beneficiary) public onlyGhoFlow{
+        mintGHO(ghoAmount);
+        createStream(flowRate, beneficiary);
+    }
+
+    function createStream(int96 flowRate, address beneficiary) public onlyGhoFlow{
         cfav1.createFlow(ghox, address(this), beneficiary, flowRate, new bytes(0)); // Create flow
     }
 

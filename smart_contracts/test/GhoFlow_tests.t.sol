@@ -174,8 +174,9 @@ contract GhoTest is StdCheats, Test {
 
     function test_GhoFlowFactory_multi_streams_with_one_deposit() public {
         ghoFlowFactory.ethToGhoStream{value: 10 ether}(1000 ether, 1, address(0x1));
-        ghoFlowFactory.createStream(10000, 1, address(0x2));
-        ghoFlowFactory.createStream(10000, 1, address(0x3));
+        ghoFlowFactory.mintGHOandCreateStream(10000, 1, address(0x2));
+        ghoFlowFactory.mintGHOandCreateStream(10000, 1, address(0x3));
+        // Getting account info
         (uint256 a,uint256 b,uint256 c,uint256 d) = (ghoFlowFactory.getInfo(acc1));
         console.log(a,b,c,d);
     }
@@ -186,10 +187,17 @@ contract GhoTest is StdCheats, Test {
         int256 aavePrice = ghoFlowFactory.getTokenValueDollars(address(aave));
 
         console.log(uint256(ethPrice));
-        // Check vs sepolia mock oracles prices
+        // sepolia mock oracles prices
         assertEq(ethPrice, 4000e8);
         assertEq(daiPrice, 1e8);
         assertEq(aavePrice, 300e8);
+    }
+
+    function test_GhoFlowFactory_deposit_mint_wrap_create_stream_separate() public {
+        ghoFlowFactory.ethToGhoStream{value: 10 ether}(1000 ether, 1, address(0x1));
+        ghoFlowFactory.mintGHO(10000);
+        ghoFlowFactory.wrapGHO(10000);
+        ghoFlowFactory.createStream(1, address(0x2));
     }
 
 }

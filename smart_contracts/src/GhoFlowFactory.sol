@@ -42,7 +42,7 @@ contract GhoFlowFactory {
         return ghoflow;
     }
 
-    // --- STREAM MANAGEMENT ---
+    // --- DEPOSIT TO STREAM MAIN FUNCTIONS ---
 
     function ethToGhoStream(uint256 ghoAmount, int96 flowRate, address beneficiary) public payable{
         ghoFlowManager().depositETHtoGHOStream{value: msg.value}(ghoAmount, flowRate, beneficiary);
@@ -56,10 +56,40 @@ contract GhoFlowFactory {
         ghoflow.depositTokensToGhoStream(tokenAddress, ghoAmount, flowRate, beneficiary);
     }  
 
-    function createStream(uint256 ghoamount, int96 flowRate, address beneficiary) public {
+    // --- COLLATERAL AND BORROW FUNCTIONS ---
+
+    function depositETH() public payable {
+        require (senderToGhoFlow[msg.sender]!=address(0));
+        GhoFlow(senderToGhoFlow[msg.sender]).depositETH{value : msg.value}();
+    }
+
+    function depositTokens(address tokenAddress) public {
+        require (senderToGhoFlow[msg.sender]!=address(0));
+        GhoFlow(senderToGhoFlow[msg.sender]).depositTokens(tokenAddress);
+
+    }
+
+    function mintGHO(uint256 ghoAmount) public{
+        require (senderToGhoFlow[msg.sender]!=address(0));
+        GhoFlow(senderToGhoFlow[msg.sender]).mintGHO(ghoAmount);
+    }
+
+    function wrapGHO(uint256 ghoAmount) public{
+        require (senderToGhoFlow[msg.sender]!=address(0));
+        GhoFlow(senderToGhoFlow[msg.sender]).wrapGHO(ghoAmount);
+    }
+
+    // --- STREAM MANAGEMENT ---
+
+    function mintGHOandCreateStream(uint256 ghoAmount, int96 flowRate, address beneficiary) public {
+        require (senderToGhoFlow[msg.sender]!=address(0));
+        GhoFlow(senderToGhoFlow[msg.sender]).mintGHOandCreateStream(ghoAmount, flowRate, beneficiary);
+    }
+
+    function createStream(int96 flowRate, address beneficiary) public {
         // Creates a superfluid stream without having to deposit collateral before
         require (senderToGhoFlow[msg.sender]!=address(0));
-        GhoFlow(senderToGhoFlow[msg.sender]).createStream(ghoamount, flowRate, beneficiary);
+        GhoFlow(senderToGhoFlow[msg.sender]).createStream(flowRate, beneficiary);
     }
  
     function updateStream(int96 flowRate, address beneficiary) public {
