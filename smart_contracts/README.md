@@ -14,14 +14,9 @@ Run tests:
 forge test
 ```
 
-Run file of tests:
-```
-forge test --match-path test/GhoFlow_tests.t.sol
-```
-
 Run single test:
 ```
-forge t --match-test testMintGho
+forge t --match-test test_GhoFlowFactory_whole_cycle
 ```
 
 

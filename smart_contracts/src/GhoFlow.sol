@@ -36,25 +36,29 @@ contract GhoFlow {
     }
 
     function depositETHtoGHOStream(uint256 ghoAmount, int96 flowRate, address beneficiary) public payable onlyGhoFlow{
-        depositETHAndGetGHO(ghoAmount);
+        depositETH();
+        mintGHO(ghoAmount);
         createStream(ghoAmount, flowRate, beneficiary);
     }
 
     function depositTokensToGhoStream(address tokenAddress, uint256 ghoAmount, int96 flowRate, address beneficiary) public onlyGhoFlow{
-        depositTokensAndGetGHO(tokenAddress, ghoAmount);
+        depositTokens(tokenAddress);
+        mintGHO(ghoAmount);
         createStream(ghoAmount, flowRate, beneficiary);
     }
 
-    function depositETHAndGetGHO(uint256 ghoAmount) internal {
+    function depositETH() public payable onlyGhoFlow {
         require(msg.value>0, "no value sent in transaction");
         wtg.depositETH{value : msg.value}(address(pool), address(this), 0); // Deposit ETH
-        pool.borrow(address(gho), ghoAmount, 2, 0, address(this)); // Borrow GHO
     }
 
-    function depositTokensAndGetGHO(address tokenAddress, uint256 ghoAmount) internal {
+    function depositTokens(address tokenAddress) public onlyGhoFlow {
         uint256 tokenBalance = IERC20(tokenAddress).balanceOf(address(this));
         IERC20(tokenAddress).approve(address(pool), tokenBalance);
         pool.supply(tokenAddress, tokenBalance, address(this), 0);
+    }
+
+    function mintGHO(uint256 ghoAmount) public onlyGhoFlow{
         pool.borrow(address(gho), ghoAmount, 2, 0, address(this)); // Borrow GHO
     }
 
@@ -89,7 +93,7 @@ contract GhoFlow {
     }
 
     modifier onlyGhoFlow() {
-        require(msg.sender == factory || msg.sender == address(this)); // Only the factory addresss can interact with its clones
+        require(msg.sender == factory || msg.sender == address(this)); // Only the factory addresss or the contract itself can interact
         _; // Continue with the function if the modifier condition is satisfied
     }
 
