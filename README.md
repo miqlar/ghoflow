@@ -19,7 +19,7 @@ GhoFlow allows the merchant to have a payment widget, streamlines the whole proc
 
 ## Description
 
-If a user would like to pay a merchant in a stream of a stablecoin, the steps would be:
+**Without GloFlow**, if a user would like to pay a merchant in a stream of a stablecoin, the steps would be:
 
 1) Deposit ETH or tokens (with prior approval) into AAVE pool.
 2) Borrow GHO against the collateral.
@@ -27,9 +27,9 @@ If a user would like to pay a merchant in a stream of a stablecoin, the steps wo
 4) Approve superfluid allowance for GHOx.
 5) Go to superfluid dashboard and create a stream with the right flowrate.
 
-These are **5-6 transactions** (depending if the user deposits ETH or Tokens), and the user needs to know all of these protocols - **not great for adoption**.
+These are **5-6 transactions** (depending if the user deposits ETH or Tokens), and the user needs to know all of these protocols and how they work - **not great for adoption**.
 
-GhoFlow comes to the rescue! The merchant sets up the widget in the checkout, with whatever is the subscription price, and BAM! in a single transaction, the user creates a stream of GHO into the merchants wallet. 
+GhoFlow comes to the rescue! The merchant sets up the payment widget in the checkout, with whatever is the subscription price, and BAM! in a single transaction, the user creates a stream of GHO into the merchants wallet. 
 
 ## Features
 
