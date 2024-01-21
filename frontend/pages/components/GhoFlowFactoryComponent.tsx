@@ -12,14 +12,24 @@ import contractABI from "../api/abi";
 
 const GhoFlowFactoryAddress = "0x31554a01faEdDFDe645D6BDd8f810CBF1D180fA8";
 
-interface Props {
-  collateralRatio: number;
-}
 
-const GhoFlowFactoryComponent = () => {
-  const { address: userAddress } = useAccount();
-  const [subscriptionMonths, setSubscriptionMonths] = useState(1);
-  const [collateralization, setCollateralization] = useState(1.0);
+interface Props {
+    ethPriceUSD: number;
+    selectedSubscription: string;
+    collateralization: number;
+    subscriptionRatePerMonth: number;
+    requiredEth: string;
+  }
+  
+  const GhoFlowFactoryComponent: React.FC<Props> = ({
+    ethPriceUSD,
+    selectedSubscription,
+    collateralization,
+    subscriptionRatePerMonth,
+    requiredEth,
+  }) => {
+    const { address: userAddress } = useAccount();
+    const flowRate = 1;
 
   // Using useContractRead to get the ETH value in dollars
   const {
@@ -36,11 +46,6 @@ const GhoFlowFactoryComponent = () => {
     ? parseFloat(formatEther(ethValueData, "wei"))
     : 1;
 
-  const subscriptionRatePerMonth = 100; // Assuming a flat rate of $100 per month
-  const totalEthAmount =
-    (subscriptionRatePerMonth * subscriptionMonths) / (ethValueInDollars);
-  const flowRate = 1; // Define the flow rate
-
   // Prepare the contract write operation
   const { config: ethStreamConfig, error: prepareError } =
     usePrepareContractWrite({
@@ -48,12 +53,12 @@ const GhoFlowFactoryComponent = () => {
       abi: contractABI.abi,
       functionName: "ethToGhoStream",
       args: [
-        BigInt(String(totalEthAmount)), // Total ETH for the subscription
+        BigInt(String(requiredEth)), // Total ETH for the subscription
         BigInt(flowRate), // The flow rate to stream GHO tokens
         userAddress as Address, // The beneficiary address
       ],
       enabled: userAddress !== undefined,
-      value: BigInt(String(totalEthAmount * collateralization)), // Collateralization amount in ETH
+      value: BigInt(Math.floor(Number(requiredEth) * collateralization)),
     });
 
   const {
@@ -82,23 +87,9 @@ const GhoFlowFactoryComponent = () => {
     }
   };
 
+  
   return (
     <div>
-      {/* UI components for selecting subscription, setting collateralization, and amount */}
-      <input
-        type="number"
-        value={subscriptionMonths}
-        onChange={(e) => setSubscriptionMonths(Number(e.target.value))}
-        placeholder="Months of subscription"
-      />
-      <input
-        type="range"
-        min="1"
-        max="2"
-        step="0.01"
-        value={collateralization}
-        onChange={(e) => setCollateralization(Number(e.target.value))}
-      />
       <button onClick={handleCreateStream} disabled={isLoading}>
         {isLoading ? "Creating Stream..." : "Create Stream"}
       </button>
