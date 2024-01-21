@@ -1,3 +1,4 @@
+'use client';
 
 import React, { useEffect, useState, ChangeEvent } from 'react';
 import {
@@ -59,7 +60,6 @@ const Home = () => {
 
   return (
     <Box p={4}>
-      <ConnectKitButton />
       {isConnected ? (
         <VStack spacing={4}>
           <Select placeholder="Select subscription" value={selectedSubscription} onChange={handleSubscriptionChange}>

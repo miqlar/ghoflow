@@ -1,3 +1,4 @@
+'use client';
 import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import { WagmiConfig, createConfig } from 'wagmi';
@@ -22,9 +23,10 @@ const config = createConfig(
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <WagmiConfig config={config}>
-      <ConnectKitProvider theme="auto" mode="auto">
+<WagmiConfig config={config}>
+      <ConnectKitProvider>
         <Component {...pageProps} />
+        <ConnectKitButton />
       </ConnectKitProvider>
     </WagmiConfig>
   );
